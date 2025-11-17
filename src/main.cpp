@@ -1,28 +1,45 @@
-#include <Arduino.h>
+#include "global.h"
 
-void TaskLEDControl(void *pvParameters) {
-  pinMode(GPIO_NUM_48, OUTPUT); // Initialize LED pin
-  int ledState = 0;
-  while(1) {
-    
-    if (ledState == 0) {
-      digitalWrite(GPIO_NUM_48, HIGH); // Turn ON LED
-    } else {
-      digitalWrite(GPIO_NUM_48, LOW); // Turn OFF LED
-    }
-    ledState = 1 - ledState;
-    vTaskDelay(2000);
-  }
-}
+#include "led_blinky.h"
+#include "neo_blinky.h"
+#include "temp_humi_monitor.h"
+// #include "mainserver.h"
+// #include "tinyml.h"
+#include "coreiot.h"
 
+// include task
+#include "task_check_info.h"
+#include "task_toogle_boot.h"
+#include "task_wifi.h"
+#include "task_webserver.h"
+#include "task_core_iot.h"
 
-void setup() {
-  // put your setup code here, to run once:
+void setup()
+{
   Serial.begin(115200);
-  xTaskCreate(TaskLEDControl, "LED Control", 2048, NULL, 2, NULL);
+  check_info_File(0);
+
+  xTaskCreate(led_blinky, "Task LED Blink", 2048, NULL, 2, NULL);
+  xTaskCreate(neo_blinky, "Task NEO Blink", 2048, NULL, 2, NULL);
+  xTaskCreate(temp_humi_monitor, "Task TEMP HUMI Monitor", 2048, NULL, 2, NULL);
+  // xTaskCreate(main_server_task, "Task Main Server" ,8192  ,NULL  ,2 , NULL);
+  // xTaskCreate( tiny_ml_task, "Tiny ML Task" ,2048  ,NULL  ,2 , NULL);
+  xTaskCreate(coreiot_task, "CoreIOT Task" ,4096  ,NULL  ,2 , NULL);
+  // xTaskCreate(Task_Toogle_BOOT, "Task_Toogle_BOOT", 4096, NULL, 2, NULL);
 }
 
-void loop() {
-  // Serial.println("Hello Custom Board");
-  // delay(1000);
+void loop()
+{
+  if (check_info_File(1))
+  {
+    if (!Wifi_reconnect())
+    {
+      Webserver_stop();
+    }
+    else
+    {
+      //CORE_IOT_reconnect();
+    }
+  }
+  Webserver_reconnect();
 }
