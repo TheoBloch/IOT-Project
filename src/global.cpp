@@ -1,6 +1,8 @@
 #include "global.h"
-float glob_temperature = 0;
-float glob_humidity = 0;
+// float glob_temperature = 0;
+// float glob_humidity = 0;
+QueueHandle_t     xSensorQueue      = nullptr;
+SemaphoreHandle_t xDisplaySemaphore = nullptr;
 
 String WIFI_SSID;
 String WIFI_PASS;
