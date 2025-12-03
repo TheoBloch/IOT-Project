@@ -6,8 +6,21 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 
-extern float glob_temperature;
-extern float glob_humidity;
+// extern float glob_temperature;
+// extern float glob_humidity;
+typedef enum { NORMAL, WARNING, CRITICAL, SENSOR_ERROR } DisplayState;// state 
+
+typedef struct {
+    float temperature;
+    float humidity;
+    bool  valid;
+} SensorData;// data because we not using global variables
+
+//semaphore 
+extern QueueHandle_t     xSensorQueue;     
+extern SemaphoreHandle_t xDisplaySemaphore;
+
+
 
 extern String WIFI_SSID;
 extern String WIFI_PASS;
