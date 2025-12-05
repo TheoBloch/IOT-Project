@@ -113,8 +113,8 @@ void coreiot_task(void *parameter)
         {
             lastTelemetryTime = millis();
 
-            float temp = glob_humidity;   // depuis temp_humi_monitor
-            float hum  = glob_temperature;
+            float temp =glob_temperature ;   // depuis temp_humi_monitor
+            float hum  = glob_humidity;
 
             Serial.println("[CoreIOT] Sending telemetry...");
             Serial.printf("  Temp: %.2f\n", temp);
@@ -123,14 +123,6 @@ void coreiot_task(void *parameter)
             CORE_IOT_sendata("telemetry", "temperature", String(temp));
             CORE_IOT_sendata("telemetry", "humidity", String(hum));
         }
-        WiFiClient client;
-        Serial.println("Testing raw TCP...");
-        if (client.connect("mqtt.coreiot.io", 1883)) {
-            Serial.println("TCP OK → CoreIOT reachable");
-        } else {
-            Serial.println("TCP FAIL → cannot reach server");
-        }
-        client.stop();
 
         vTaskDelay(50 / portTICK_PERIOD_MS);
     }

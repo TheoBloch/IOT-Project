@@ -5,7 +5,7 @@ float glob_humidity = 0;
 String WIFI_SSID="QK 8";
 String WIFI_PASS="0919455888";
 String CORE_IOT_TOKEN="wekj6leufc7ctk8mw01l";
-String CORE_IOT_SERVER="mqtt.coreiot.io";
+String CORE_IOT_SERVER="app.coreiot.io";
 String CORE_IOT_PORT="1883";
 
 String ssid = "ESP32-YOUR NETWORK HERE!!!";
