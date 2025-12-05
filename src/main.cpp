@@ -18,19 +18,12 @@ void setup()
 {
   Serial.begin(115200);
   //check_info_File(0);
-  WiFi.mode(WIFI_AP);
-  WiFi.softAP("TEST_AP", "buyfbi38492eu#@");
-  Serial.println(WiFi.softAPIP());
-  if (!LittleFS.begin()) {
-        Serial.println("❌ LittleFS mount failed");
-    } else {
-        Serial.println("✅ LittleFS mounted");
-    }
-  Webserver_reconnect();
+
+
  // xTaskCreate(led_blinky, "Task LED Blink", 2048, NULL, 2, NULL);
   //xTaskCreate(neo_blinky, "Task NEO Blink", 2048, NULL, 2, NULL);
   //xTaskCreate(temp_humi_monitor, "Task TEMP HUMI Monitor", 2048, NULL, 2, NULL);
- //xTaskCreate(main_server_task, "Task Main Server" ,8192  ,NULL  ,2 , NULL);
+ xTaskCreate(task_webserver, "Task Main Server" ,10000  ,NULL  ,2 , NULL);
  //xTaskCreate( startSTA, "Connect to wifi" ,2048  ,NULL  ,2 , NULL);
   // xTaskCreate( tiny_ml_task, "Tiny ML Task" ,2048  ,NULL  ,2 , NULL);
   //xTaskCreate(coreiot_task, "CoreIOT Task" ,4096  ,NULL  ,2 , NULL);

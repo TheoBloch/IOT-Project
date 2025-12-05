@@ -108,7 +108,14 @@ void Webserver_stop()
     server.end();
     webserver_isrunning = false;
 }
-
+void task_webserver(void* parameter){
+    while(true){
+        if (!LittleFS.begin()) {
+            Serial.println("LittleFS mount failed");
+        } 
+        Webserver_reconnect();
+    }
+}
 void Webserver_reconnect()
 {
     if (!webserver_isrunning) {
