@@ -32,7 +32,13 @@ void handleWebSocketMessage2(String message)
 
     if (message == "toggle_led2") {
         led2State = !led2State;
-        digitalWrite(LED2_PIN, led2State);
+        pinMode(48,0x03);
+        if(led2State){
+            digitalWrite(48, 0x1);
+        }
+        else{
+            digitalWrite(48, 0x0);
+        }
         Webserver_sendata(String("{\"led2\":") + (led2State ? "1" : "0") + "}");
     }
 }

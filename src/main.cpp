@@ -21,6 +21,12 @@ void setup()
   WiFi.mode(WIFI_AP);
   WiFi.softAP("TEST_AP", "buyfbi38492eu#@");
   Serial.println(WiFi.softAPIP());
+  if (!LittleFS.begin()) {
+        Serial.println("❌ LittleFS mount failed");
+    } else {
+        Serial.println("✅ LittleFS mounted");
+    }
+  Webserver_reconnect();
  // xTaskCreate(led_blinky, "Task LED Blink", 2048, NULL, 2, NULL);
   //xTaskCreate(neo_blinky, "Task NEO Blink", 2048, NULL, 2, NULL);
   //xTaskCreate(temp_humi_monitor, "Task TEMP HUMI Monitor", 2048, NULL, 2, NULL);
