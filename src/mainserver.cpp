@@ -1,6 +1,7 @@
 // #include "mainserver.h"
 // #include <WiFi.h>
 // #include <WebServer.h>
+// #include "global.h"
 
 // bool led1_state = false;
 // bool led2_state = false;

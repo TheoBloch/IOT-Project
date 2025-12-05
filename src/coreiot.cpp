@@ -106,25 +106,25 @@ void setup_coreiot(){
 
 }
 
-void coreiot_task(void *pvParameters){
+// void coreiot_task(void *pvParameters){
 
-    setup_coreiot();
+//     setup_coreiot();
 
-    while(1){
+//     while(1){
 
-        if (!client.connected()) {
-            reconnect();
-        }
-        client.loop();
+//         if (!client.connected()) {
+//             reconnect();
+//         }
+//         client.loop();
 
-        // Sample payload, publish to 'v1/devices/me/telemetry'
-        String payload = "{\"temperature\":" + String(glob_temperature) +  ",\"humidity\":" + String(glob_humidity) + "}";
+//         // Sample payload, publish to 'v1/devices/me/telemetry'
+//         String payload = "{\"temperature\":" + String(glob_temperature) +  ",\"humidity\":" + String(glob_humidity) + "}";
         
-        client.publish("v1/devices/me/telemetry", payload.c_str());
+//         client.publish("v1/devices/me/telemetry", payload.c_str());
 
 
         
-        Serial.println("Published payload: " + payload);
-        vTaskDelay(10000);  // Publish every 10 seconds
-    }
-}
+//         Serial.println("Published payload: " + payload);
+//         vTaskDelay(10000);  // Publish every 10 seconds
+//     }
+// }
