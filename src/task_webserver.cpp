@@ -1,4 +1,6 @@
 #include "task_webserver.h"
+#include <Adafruit_NeoPixel.h>
+
 
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
@@ -23,12 +25,22 @@ void Webserver_sendata(String data)
 void handleWebSocketMessage2(String message)
 {
     Serial.println("WS msg received: " + message);
-
+    
     if (message == "toggle_led1") {
+        Adafruit_NeoPixel strip(1, 45, NEO_GRB + NEO_KHZ800);
+        strip.begin();
+        strip.clear();                                
         led1State = !led1State;
-        digitalWrite(LED1_PIN, led1State);
+        if(led1State){
+            strip.setPixelColor(0, strip.Color(255, 0, 0)); // Set pixel 0 to red
+            strip.show(); // Update the strip
+        }
+        else{
+            strip.setPixelColor(0, strip.Color(0, 0, 0)); // Turn pixel 0 off
+            strip.show(); // Update the strip
+        }        
         Webserver_sendata(String("{\"led1\":") + (led1State ? "1" : "0") + "}");
-    }
+        }
 
     if (message == "toggle_led2") {
         led2State = !led2State;
