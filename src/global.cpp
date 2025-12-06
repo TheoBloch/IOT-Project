@@ -1,6 +1,8 @@
 #include "global.h"
-float glob_temperature = 0;
-float glob_humidity = 0;
+// float glob_temperature = 0;
+// float glob_humidity = 0;
+QueueHandle_t     xSensorQueue      = nullptr;
+SemaphoreHandle_t xDisplaySemaphore = nullptr;
 
 String WIFI_SSID="QK 8";
 String WIFI_PASS="0919455888";
@@ -13,4 +15,8 @@ String password = "12345678";
 String wifi_ssid = "abcde";
 String wifi_password = "123456789";
 boolean isWifiConnected = false;
-SemaphoreHandle_t xBinarySemaphoreInternet = xSemaphoreCreateBinary();
+
+
+
+SemaphoreHandle_t xBinarySemaphoreInternet = nullptr;
+// SemaphoreHandle_t xBinarySemaphoreInternet = xSemaphoreCreateBinary();

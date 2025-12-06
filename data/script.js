@@ -37,13 +37,22 @@ function Send_Data(data) {
 
 function onMessage(event) {
     console.log("📩 Nhận:", event.data);
+
     try {
-        var data = JSON.parse(event.data);
-        // Có thể thêm xử lý riêng nếu cần (ví dụ cập nhật trạng thái)
+        const data = JSON.parse(event.data);
+
+        if (data.temperature !== undefined) {
+            gaugeTemp.refresh(data.temperature);
+        }
+        if (data.humidity !== undefined) {
+            gaugeHumi.refresh(data.humidity);
+        }
+
     } catch (e) {
         console.warn("Không phải JSON hợp lệ:", event.data);
     }
 }
+
 
 
 // ==================== UI NAVIGATION ====================
@@ -86,10 +95,7 @@ window.onload = function () {
         levelColors: ["#42A5F5", "#00BCD4", "#0288D1"]
     });
 
-    setInterval(() => {
-        gaugeTemp.refresh(Math.floor(Math.random() * 15) + 20);
-        gaugeHumi.refresh(Math.floor(Math.random() * 40) + 40);
-    }, 3000);
+
 };
 
 

@@ -81,8 +81,6 @@ void connnectWSV()
     WiFi.softAP("MyESP-AccessPoint", "12345678");  
     Serial.println("AP IP address: " + WiFi.softAPIP().toString());
 
-    pinMode(LED1_PIN, OUTPUT);
-    pinMode(LED2_PIN, OUTPUT);
 
     ws.onEvent(onEvent);
     server.addHandler(&ws);

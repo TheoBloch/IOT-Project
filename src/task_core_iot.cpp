@@ -47,9 +47,7 @@ const std::array<RPC_Callback, 1U> callbacks = {
 const Shared_Attribute_Callback attributes_callback(&processSharedAttributes, SHARED_ATTRIBUTES_LIST.cbegin(), SHARED_ATTRIBUTES_LIST.cend());
 const Attribute_Request_Callback attribute_shared_request_callback(&processSharedAttributes, SHARED_ATTRIBUTES_LIST.cbegin(), SHARED_ATTRIBUTES_LIST.cend());
 
-// -------------------------------------------------------
-//   Envoi des données à ThingsBoard/CoreIOT (déjà existant)
-// -------------------------------------------------------
+
 void CORE_IOT_sendata(String mode, String feed, String data)
 {
     if (mode == "attribute")
@@ -63,9 +61,6 @@ void CORE_IOT_sendata(String mode, String feed, String data)
     }
 }
 
-// -------------------------------------------------------
-//              Connexion au serveur CoreIOT
-// -------------------------------------------------------
 void CORE_IOT_reconnect()
 {
     if (!tb.connected())
@@ -94,9 +89,7 @@ void CORE_IOT_reconnect()
     }
 }
 
-// -------------------------------------------------------
-//              TASK : Publish Temp + Humi
-// -------------------------------------------------------
+
 void coreiot_task(void *parameter)
 {
     Serial.println("[CoreIOT TASK] Started.");
@@ -112,9 +105,11 @@ void coreiot_task(void *parameter)
         if (millis() - lastTelemetryTime >= telemetrySendInterval)
         {
             lastTelemetryTime = millis();
-
-            float temp =glob_temperature ;   // depuis temp_humi_monitor
-            float hum  = glob_humidity;
+            SensorData data;
+            
+            xQueuePeek(xSensorQueue, &data, 0);
+            float temp =data.temperature ;   // depuis temp_humi_monitor
+            float hum  = data.humidity;
 
             Serial.println("[CoreIOT] Sending telemetry...");
             Serial.printf("  Temp: %.2f\n", temp);
