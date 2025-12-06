@@ -98,17 +98,15 @@ void coreiot_task(void *parameter)
 
     for (;;)
     {
-        // 1) Assure la connexion MQTT/CoreIOT
         CORE_IOT_reconnect();
 
-        // 2) Toutes les X secondes → envoi des données capteurs
         if (millis() - lastTelemetryTime >= telemetrySendInterval)
         {
             lastTelemetryTime = millis();
             SensorData data;
             
             xQueuePeek(xSensorQueue, &data, 0);
-            float temp =data.temperature ;   // depuis temp_humi_monitor
+            float temp =data.temperature ;   
             float hum  = data.humidity;
 
             Serial.println("[CoreIOT] Sending telemetry...");
