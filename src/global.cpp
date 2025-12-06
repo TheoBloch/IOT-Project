@@ -18,5 +18,4 @@ boolean isWifiConnected = false;
 
 
 
-SemaphoreHandle_t xBinarySemaphoreInternet = nullptr;
-// SemaphoreHandle_t xBinarySemaphoreInternet = xSemaphoreCreateBinary();
+SemaphoreHandle_t xBinarySemaphoreInternet = xSemaphoreCreateBinary();

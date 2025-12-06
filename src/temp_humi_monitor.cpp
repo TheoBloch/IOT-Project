@@ -21,7 +21,6 @@ void sendTelemetryToServer(float temp, float hum)
 void temp_humi_monitor(void *pvParameters)
 {
     Wire.begin(11, 12);
-    Serial.begin(115200);
     dht20.begin();
 
     // Khởi tạo LCD
@@ -44,6 +43,12 @@ void temp_humi_monitor(void *pvParameters)
         data.humidity = data.valid ? h : -1.0f;
 
         // Gửi dữ liệu mới nhất vào queue
+        Serial.printf("temp_task: xSensorQueue=%p, xDisplaySemaphore=%p\n", (void*)xSensorQueue, (void*)xDisplaySemaphore);
+        if (xSensorQueue == NULL) {
+        Serial.println("❌ Queue NULL dans temp_humi_monitor");
+        vTaskDelay(pdMS_TO_TICKS(1000)); continue;
+        }
+
         xQueueOverwrite(xSensorQueue, &data);
         xSemaphoreGive(xDisplaySemaphore); // Báo LCD: "Có dữ liệu mới!"
 

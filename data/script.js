@@ -2,23 +2,27 @@
 var gateway = `ws://${window.location.hostname}/ws`;
 var websocket;
 
+let gaugeTemp = null;
+let gaugeHumi = null;
+
 window.addEventListener('load', onLoad);
 
-function onLoad(event) {
+function onLoad() {
+    initGauges();
     initWebSocket();
 }
 
-function onOpen(event) {
-    console.log('Connection opened');
+function onOpen() {
+    console.log('WebSocket connection opened');
 }
 
-function onClose(event) {
-    console.log('Connection closed');
+function onClose() {
+    console.log('WebSocket connection closed');
     setTimeout(initWebSocket, 2000);
 }
 
 function initWebSocket() {
-    console.log('Trying to open a WebSocket connection…');
+    console.log('Opening WebSocket connection…');
     websocket = new WebSocket(gateway);
     websocket.onopen = onOpen;
     websocket.onclose = onClose;
@@ -28,31 +32,61 @@ function initWebSocket() {
 function Send_Data(data) {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
         websocket.send(data);
-        console.log("📤 Gửi:", data);
+        console.log("Sent:", data);
     } else {
-        console.warn("⚠️ WebSocket chưa sẵn sàng!");
-        alert("⚠️ WebSocket chưa kết nối!");
+        console.warn("WebSocket not ready!");
+        alert("WebSocket not connected!");
     }
 }
 
 function onMessage(event) {
-    console.log("📩 Nhận:", event.data);
+    if (typeof event.data !== "string") return;
+
+    console.log("Received:", event.data);
 
     try {
         const data = JSON.parse(event.data);
 
-        if (data.temperature !== undefined) {
+        if (gaugeTemp && data.temperature !== undefined)
             gaugeTemp.refresh(data.temperature);
-        }
-        if (data.humidity !== undefined) {
-            gaugeHumi.refresh(data.humidity);
-        }
 
-    } catch (e) {
-        console.warn("Không phải JSON hợp lệ:", event.data);
+        if (gaugeHumi && data.humidity !== undefined)
+            gaugeHumi.refresh(data.humidity);
+
+    } catch (err) {
+        console.warn("JSON.parse failed:", event.data, err);
     }
 }
 
+
+// ==================== HOME GAUGES ====================
+function initGauges() {
+    gaugeTemp = new JustGage({
+        id: "gauge_temp",
+        value: 26,
+        min: -10,
+        max: 50,
+        donut: true,
+        pointer: false,
+        gaugeWidthScale: 0.25,
+        gaugeColor: "transparent",
+        levelColorsGradient: true,
+        levelColors: ["#00BCD4", "#4CAF50", "#FFC107", "#F44336"]
+    });
+
+    gaugeHumi = new JustGage({
+        id: "gauge_humi",
+        value: 60,
+        min: 0,
+        max: 100,
+        donut: true,
+        pointer: false,
+        gaugeWidthScale: 0.25,
+        gaugeColor: "transparent",
+        levelColorsGradient: true,
+        levelColors: ["#42A5F5", "#00BCD4", "#0288D1"]
+    });
+}
 
 
 // ==================== UI NAVIGATION ====================
@@ -67,53 +101,26 @@ function showSection(id, event) {
 }
 
 
-// ==================== HOME GAUGES ====================
-window.onload = function () {
-    const gaugeTemp = new JustGage({
-        id: "gauge_temp",
-        value: 26,
-        min: -10,
-        max: 50,
-        donut: true,
-        pointer: false,
-        gaugeWidthScale: 0.25,
-        gaugeColor: "transparent",
-        levelColorsGradient: true,
-        levelColors: ["#00BCD4", "#4CAF50", "#FFC107", "#F44336"]
-    });
-
-    const gaugeHumi = new JustGage({
-        id: "gauge_humi",
-        value: 60,
-        min: 0,
-        max: 100,
-        donut: true,
-        pointer: false,
-        gaugeWidthScale: 0.25,
-        gaugeColor: "transparent",
-        levelColorsGradient: true,
-        levelColors: ["#42A5F5", "#00BCD4", "#0288D1"]
-    });
-
-
-};
-
-
 // ==================== DEVICE FUNCTIONS ====================
 function openAddRelayDialog() {
     document.getElementById('addRelayDialog').style.display = 'flex';
 }
+
 function closeAddRelayDialog() {
     document.getElementById('addRelayDialog').style.display = 'none';
 }
+
 function saveRelay() {
     const name = document.getElementById('relayName').value.trim();
     const gpio = document.getElementById('relayGPIO').value.trim();
-    if (!name || !gpio) return alert("⚠️ Please fill all fields!");
+
+    if (!name || !gpio) return alert("Please fill all fields!");
+
     relayList.push({ id: Date.now(), name, gpio, state: false });
     renderRelays();
     closeAddRelayDialog();
 }
+
 function renderRelays() {
     const container = document.getElementById('relayContainer');
     container.innerHTML = "";
@@ -121,17 +128,18 @@ function renderRelays() {
         const card = document.createElement('div');
         card.className = 'device-card';
         card.innerHTML = `
-      <i class="fa-solid fa-bolt device-icon"></i>
-      <h3>${r.name}</h3>
-      <p>GPIO: ${r.gpio}</p>
-      <button class="toggle-btn ${r.state ? 'on' : ''}" onclick="toggleRelay(${r.id})">
-        ${r.state ? 'ON' : 'OFF'}
-      </button>
-      <i class="fa-solid fa-trash delete-icon" onclick="showDeleteDialog(${r.id})"></i>
-    `;
+            <i class="fa-solid fa-bolt device-icon"></i>
+            <h3>${r.name}</h3>
+            <p>GPIO: ${r.gpio}</p>
+            <button class="toggle-btn ${r.state ? 'on' : ''}" onclick="toggleRelay(${r.id})">
+                ${r.state ? 'ON' : 'OFF'}
+            </button>
+            <i class="fa-solid fa-trash delete-icon" onclick="showDeleteDialog(${r.id})"></i>
+        `;
         container.appendChild(card);
     });
 }
+
 function toggleRelay(id) {
     const relay = relayList.find(r => r.id === id);
     if (relay) {
@@ -148,13 +156,16 @@ function toggleRelay(id) {
         renderRelays();
     }
 }
+
 function showDeleteDialog(id) {
     deleteTarget = id;
     document.getElementById('confirmDeleteDialog').style.display = 'flex';
 }
+
 function closeConfirmDelete() {
     document.getElementById('confirmDeleteDialog').style.display = 'none';
 }
+
 function confirmDelete() {
     relayList = relayList.filter(r => r.id !== deleteTarget);
     renderRelays();
@@ -162,7 +173,7 @@ function confirmDelete() {
 }
 
 
-// ==================== SETTINGS FORM (BỔ SUNG) ====================
+// ==================== SETTINGS FORM ====================
 document.getElementById("settingsForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -174,15 +185,9 @@ document.getElementById("settingsForm").addEventListener("submit", function (e) 
 
     const settingsJSON = JSON.stringify({
         page: "setting",
-        value: {
-            ssid: ssid,
-            password: password,
-            token: token,
-            server: server,
-            port: port
-        }
+        value: { ssid, password, token, server, port }
     });
 
     Send_Data(settingsJSON);
-    alert("✅ Cấu hình đã được gửi đến thiết bị!");
+    alert("Settings sent to device!");
 });
