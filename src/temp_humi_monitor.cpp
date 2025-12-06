@@ -50,7 +50,8 @@ void temp_humi_monitor(void *pvParameters)
         }
 
         xQueueOverwrite(xSensorQueue, &data);
-        xSemaphoreGive(xDisplaySemaphore); // Báo LCD: "Có dữ liệu mới!"
+        xSemaphoreGive(xDisplaySemaphore); 
+        xSemaphoreGive(xDisplaySemaphore); 
 
         // In ra serial monitor
         Serial.printf("Temp: %.1f°C | Hum: %.1f%% | %s\n",

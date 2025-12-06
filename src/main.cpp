@@ -29,10 +29,10 @@
     Serial.printf("setup: xSensorQueue=%p, xDisplaySemaphore=%p\n", (void*)xSensorQueue, (void*)xDisplaySemaphore);
 
     vTaskSuspendAll();
-    //xTaskCreate(led_blinky, "Task LED Blink", 2048, NULL, 2, NULL);
-    //xTaskCreate(neo_blinky, "Task NEO Blink", 2048, NULL, 2, NULL);
+    xTaskCreate(led_blinky, "Task LED Blink", 6144, NULL, 2, NULL);
+    xTaskCreate(neo_blinky, "Task NEO Blink", 6144, NULL, 2, NULL);
     xTaskCreate(temp_humi_monitor, "Task TEMP HUMI Monitor", 16384, NULL, 2, NULL);
-    xTaskCreate(task_webserver, "Task  Webserver" ,10000  ,NULL  ,2 , NULL);
+    //xTaskCreate(task_webserver, "Task  Webserver" ,10000  ,NULL  ,2 , NULL);
     // xTaskCreate( tiny_ml_task, "Tiny ML Task" ,2048  ,NULL  ,2 , NULL);
     //xTaskCreate(coreiot_task, "CoreIOT Task" ,16384  ,NULL  ,2 , NULL);
     //xTaskCreate(Task_Toogle_BOOT, "Task_Toogle_BOOT", 4096, NULL, 2, NULL);
